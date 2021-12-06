@@ -31,7 +31,11 @@ Links will be added as articles are published
 
 -   DW.com: “COVID: How Europe’s prisons have fared in the pandemic”
     [English](https://www.dw.com/a-60006262) \|
-    [German](https://www.dw.com/a-60006746)
+    [Albanian](https://p.dw.com/p/43se9) \|
+    [German](https://www.dw.com/a-60006746) | [Greek](https://www.dw.com/a-60028764)
+-   European Data Journalism Network: “Locked up: Covid-19 and prisons
+    in Europe”
+    (<https://www.europeandatajournalism.eu/eng/Investigations/Locked-up-Covid-19-and-prisons-in-Europe>)
 
 **This repository is maintained by:** [Kira
 Schacht](https://twitter.com/daten_drang)
@@ -91,7 +95,6 @@ sources:
     COVID-19](https://www.europris.org/covid-19-prevention-measures-in-european-prisons/)
 -   [Prison Insider (2020): Europe: coronavirus, prison
     fever](https://www.prison-insider.com/en/articles/europe-coronavirus-la-fievre-des-prisons)
-    Europris
 
 You can find detailed information on the source of each data point in
 the project database, which you can find in the Excel file in this
@@ -139,8 +142,10 @@ Main dataset columns:
     ## [11] "administered doses"          "fully vaccinated people"
 
 Chart of available data points:
-![](scripts/prisons_files/figure-gfm/unnamed-chunk-8-1.png)<!-- --> Number of
-countries by geographic levels of data:
+
+![](scripts/prisons_files/figure-gfm/unnamed-chunk-8-1.png)
+
+Number of countries by geographic levels of data:
 
 ``` r
 d %>% group_by(level) %>% summarize(n = length(unique(country))) %>% knitr::kable()
@@ -202,7 +207,7 @@ To see how complete a picture the regional data for Germany provide, we
 check to see whether the regions with the highest case numbers also
 provided relatively frequent data updates.
 
-![](scripts/prisons_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
+![](scripts/prisons_files/figure-gfm/unnamed-chunk-13-1.png)
 
 -   **Spain:** data present for all regions for the same points in time
 -   **Germany:** regions with higher case numbers have provide more data
@@ -253,7 +258,7 @@ countries and will not be aggregated.
 Plot national cumulative data over time, for countries with data points
 in 2021.
 
-![](scripts/prisons_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
+![](scripts/prisons_files/figure-gfm/unnamed-chunk-17-1.png)
 
 -   France has the most cases among inmates and staff, followed by
     Spain, Germany, Hungary and Belgium.
@@ -271,7 +276,7 @@ date from `d_pop`. The reference date is noted in the finished data set.
 
 Plot relative cases / deaths over time:
 
-![](scripts/prisons_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
+![](scripts/prisons_files/figure-gfm/unnamed-chunk-19-1.png)
 
 **Latest infection rate among inmates by country:**
 
@@ -398,7 +403,7 @@ earlier data from the other countries, which are from before the winter
 
 **Plot relative deaths in prisons compared to the general population:**
 
-![](scripts/prisons_files/figure-gfm/unnamed-chunk-26-1.png)<!-- -->
+![](scripts/prisons_files/figure-gfm/unnamed-chunk-26-1.png)
 
 Deaths are a lot lower than they are in the general population for all
 countries.
@@ -406,7 +411,7 @@ countries.
 **Plot case fatality rates in prisons compared to the general
 population:**
 
-![](scripts/prisons_files/figure-gfm/unnamed-chunk-28-1.png)<!-- -->
+![](scripts/prisons_files/figure-gfm/unnamed-chunk-28-1.png)
 
 The case fatality rate in prisons is only a fraction of that in the
 general population, except for Bulgaria. It seems unlikely that case
@@ -422,7 +427,7 @@ Calculate share of inmates vaccinated like in 5.2.
 
 Plot progress over time:
 
-![](scripts/prisons_files/figure-gfm/unnamed-chunk-30-1.png)<!-- -->
+![](scripts/prisons_files/figure-gfm/unnamed-chunk-30-1.png)
 
 # 6.2 Compare vaccination progress to population
 

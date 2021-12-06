@@ -7,7 +7,7 @@ output:
 ---
 
 ```{r setup, include = FALSE}
-knitr::opts_knit$set(root.dir = "") #INSERT YOUR PROJECT DIRECTORY HERE
+knitr::opts_knit$set(root.dir = "/Users/schachtk/Documents/DW/xxx_prisons/extern") #INSERT YOUR PROJECT DIRECTORY HERE
 knitr::opts_chunk$set(
 	echo = FALSE,
 	message = FALSE,
@@ -33,7 +33,8 @@ This project is a collaboration within the [European Data Journalism Network](ht
 
 Links will be added as articles are published
 
-- DW.com: "COVID: How Europe’s prisons have fared in the pandemic" [English](https://www.dw.com/a-xxx) | [German](https://www.dw.com/a-xxx)
+- DW.com: "COVID: How Europe’s prisons have fared in the pandemic" [English](https://www.dw.com/a-60006262) | [Albanian](https://p.dw.com/p/43se9) | [German](https://www.dw.com/a-60006746) | [Greek](https://www.dw.com/a-60028764)
+- European Data Journalism Network: "Locked up: Covid-19 and prisons in Europe" (https://www.europeandatajournalism.eu/eng/Investigations/Locked-up-Covid-19-and-prisons-in-Europe)
 
 **This repository is maintained by:** [Kira Schacht](https://twitter.com/daten_drang)
 
@@ -75,7 +76,6 @@ Data on pandemic measures and were augmented using the following sources:
 - [EuroPris (2021): COVID-19 Feedback Collection](https://www.europris.org/file/13548/)
 - [EuroPris (2021): Prevention measures in European Prisons against COVID-19](https://www.europris.org/covid-19-prevention-measures-in-european-prisons/)
 - [Prison Insider (2020): Europe: coronavirus, prison fever](https://www.prison-insider.com/en/articles/europe-coronavirus-la-fievre-des-prisons)
-Europris
 
 You can find detailed information on the source of each data point in the project database, which you can find in the Excel file in this repository, as well as in this [Google Sheet](https://docs.google.com/spreadsheets/d/11tNCMg1vkXedOKbMcU30dtHNOsqQmtBx-ejMHd2sZ9M/edit#gid=1438591309).
 
@@ -173,13 +173,15 @@ names(d)
 ```
 
 Chart of available data points:
-```{r}
+```{r include=FALSE}
 d_plot = d %>% group_by(country) %>% filter(max(date) > as.Date("2021-01-01"))
 
 ggplot(d_plot, aes(date, country)) +
     geom_point() +
     ggtitle("Available data points per country")
 ```
+![](scripts/prisons_files/figure-gfm/unnamed-chunk-8-1.png)
+
 Number of countries by geographic levels of data:
 ```{r echo=TRUE}
 d %>% group_by(level) %>% summarize(n = length(unique(country))) %>% knitr::kable()
@@ -220,11 +222,12 @@ d_regional = d %>% filter(country %in% c("Germany","Spain (State Adm.)"), level 
 
 To see how complete a picture the regional data for Germany provide, we check to see whether the regions with the highest case numbers also provided relatively frequent data updates.
 
-```{r}
+```{r include=FALSE}
 ggplot(d_regional %>% filter(country == "Germany"), aes(date, region)) +
     geom_point(aes(size = cases_inmates)) +
     geom_text(aes(label = cases_inmates), vjust = -.5, size = 3)
 ```
+![](scripts/prisons_files/figure-gfm/unnamed-chunk-13-1.png)
 
 - **Spain:** data present for all regions for the same points in time
 - **Germany:** regions with higher case numbers have provide more data points, regions with only few available data points have relatively low numbers
@@ -291,7 +294,7 @@ This data can't be compared to cumulative data points from other countries and w
 
 Plot national cumulative data over time, for countries with data points in 2021.
 
-```{r}
+```{r include=FALSE}
 d_plot = d %>%
   group_by(country) %>% 
   filter(level == "national", period == "cumulative", country != "Italy",
@@ -310,6 +313,7 @@ ggplot(d_plot) +
   facet_wrap(~name, scales = "free_y") +
   ggtitle("COVID-19 Cases & deaths in prisons")
 ```
+![](scripts/prisons_files/figure-gfm/unnamed-chunk-17-1.png)
 
 - France has the most cases among inmates and staff, followed by Spain, Germany, Hungary and Belgium.
 - Hungary has the highest death counts among inmates, although they're still very low, followed, Spain.
@@ -334,7 +338,7 @@ d_cases_rel = d %>% filter(level == "national", period == "cumulative") %>%
 
 Plot relative cases / deaths over time:
 
-```{r}
+```{r include=FALSE}
 d_plot = d_cases_rel %>% group_by(country) %>% 
   filter(!grepl("Italy", country),
          max(date) > as.Date("2021-01-01"))
@@ -352,6 +356,8 @@ ggplot(d_plot) +
   ggtitle("COVID-19 Cases & deaths in prisons",
           subtitle = "% of inmates that tested positive / died related to COVID-19")
 ```
+![](scripts/prisons_files/figure-gfm/unnamed-chunk-19-1.png)
+
 ```{r}
 #Ranking of latest data:
 tmp = d_cases_rel %>% group_by(country, type) %>%
@@ -457,7 +463,7 @@ ggplot(d_plot %>% filter(type == "cases", max(date) > as.Date("2021-01-01")),
 
 **Plot relative deaths in prisons compared to the general population:**
 
-```{r}
+```{r include=FALSE}
 ggplot(d_plot %>% filter(type == "deaths", max(date) > as.Date("2021-01-01")),
        aes(value_population_rel, value_rel, label = country,
            color = (value_population_rel > value_rel))) +
@@ -471,6 +477,7 @@ ggplot(d_plot %>% filter(type == "deaths", max(date) > as.Date("2021-01-01")),
        subtitle = "Countries above the line have more COVID-19 deaths in prison than in the general population",
        x = "cumulative deaths in total population", y = "cumulative deaths in prisons")
 ```
+![](scripts/prisons_files/figure-gfm/unnamed-chunk-26-1.png)
 
 Deaths are a lot lower than they are in the general population for all countries.
 
@@ -491,7 +498,7 @@ d_cfr_rel = d_cfr %>%
   
 ```
 
-```{r}
+```{r include=FALSE}
 ggplot(d_cfr_rel, aes(cfr_population, cfr, label = country,
            color = (cfr_population > cfr))) +
   geom_abline(yintercept = 0, slope = 1) +
@@ -504,6 +511,7 @@ ggplot(d_cfr_rel, aes(cfr_population, cfr, label = country,
        subtitle = "Reported deaths in % of Covid-19 cases. Countries above the line have a higher CFR in prison than in the general population.",
        x = "CFR in total population", y = "CFR in prisons")
 ```
+![](scripts/prisons_files/figure-gfm/unnamed-chunk-28-1.png)
 
 The case fatality rate in prisons is only a fraction of that in the general population, except for Bulgaria. It seems unlikely that case fatality rates in prisons are actually this low. The more likely hypothesis would be that deaths related to COVID-19 do not get reported as reliably in prisons as they do in the general population.
 
@@ -529,7 +537,7 @@ d_vax_rel = d %>%
 
 Plot progress over time:
 
-```{r}
+```{r include=FALSE}
 d_plot = d_vax_rel %>% filter(!is.na(value_rel))
 
 ggplot(d_plot) +
@@ -546,7 +554,7 @@ ggplot(d_plot) +
           subtitle = "% of inmates vaccinated against COVID-19")
 
 ```
-
+![](scripts/prisons_files/figure-gfm/unnamed-chunk-30-1.png)
 
 # 6.2 Compare vaccination progress to population
 
