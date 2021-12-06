@@ -30,8 +30,8 @@ this investigation.*
 Links will be added as articles are published
 
 -   DW.com: “COVID: How Europe’s prisons have fared in the pandemic”
-    [English](https://www.dw.com/a-xxx) \|
-    [German](https://www.dw.com/a-xxx)
+    [English](https://www.dw.com/a-60006262) \|
+    [German](https://www.dw.com/a-60006746)
 
 **This repository is maintained by:** [Kira
 Schacht](https://twitter.com/daten_drang)
