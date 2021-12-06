@@ -1,0 +1,658 @@
+---
+title: "EDJNet 3: Prisons & Covid"
+number_sections: yes
+output:
+  md_document:
+    variant: gfm
+---
+
+```{r setup, include = FALSE}
+knitr::opts_knit$set(root.dir = "") #INSERT YOUR PROJECT DIRECTORY HERE
+knitr::opts_chunk$set(
+	echo = FALSE,
+	message = FALSE,
+	warning = FALSE
+)
+
+```
+
+
+# COVID: How Europe’s prisons have fared in the pandemic
+
+Prisons make fertile breeding grounds for viruses, yet administrations have revealed little about COVID-19 cases, deaths and vaccinations in Europe’s prisons. Data from 29 countries show the pandemic’s impact on prisons.
+
+This project is a collaboration within the [European Data Journalism Network](https://www.europeandatajournalism.eu/).
+
+**Project lead:** [Deutsche Welle](https://www.dw.com/en/data/t-43091100)
+
+**Collaborators:** [Alternatives Economiques](https://www.alternatives-economiques.fr/), [Civio](https://civio.es/), [El Confidencial](https://www.elconfidencial.com/), [EUrologus](https://index.hu/kulfold/eurologus/), [Il Sole24Ore](https://www.ilsole24ore.com/), [iMEdD](https://imedd.org/), [MIIR](https://miir.gr/), [OBC Transeuropa](https://www.balcanicaucaso.org/), [Openpolis](https://www.openpolis.it/), [Pod črto](https://podcrto.si/), [VoxEurop](http://voxeurop.eu/)
+
+*In this repository, you will find methodology, data and code behind this investigation.*
+
+**Read the articles that came out of this collaboration:**
+
+Links will be added as articles are published
+
+- DW.com: "COVID: How Europe’s prisons have fared in the pandemic" [English](https://www.dw.com/a-xxx) | [German](https://www.dw.com/a-xxx)
+
+**This repository is maintained by:** [Kira Schacht](https://twitter.com/daten_drang)
+
+# Files
+
+| Name | Content |
+|---|---|
+| `Database Prisons and Covid.xlsx`	| The main database used for this project |
+| `scripts/prisons.Rmd`	| The main R markdown script. Run in RStudio to reproduce this analysis. |
+|`scripts/data.RData` | The R Data file containing the datasets imported and created using the analysis script. |
+|`data/...` | Other data files used for this analysis |
+|`graphics/...` | Finalized graphics that came out of this analysis |
+
+
+# Data sources
+
+Much of the data we use is collated from various sources and collected for this project by the collaborators. 
+
+Notable sources include:
+
+For prison populations and capacities, as well as case numbers, up to September 2020:
+
+- Aebi, M. F., & Tiago, M. M. (2021). [SPACE I - 2020 – Council of Europe Annual Penal Statistics: Prison populations](https://wp.unil.ch/space/space-i/annual-reports/). 
+Strasbourg: Council of Europe 
+- Aebi, M. F. & Tiago, M. M. (2020). [Prisons and Prisoners in Europe in Pandemic Times: An evaluation of the medium-term impact of the COVID-19 on prison populations](https://wp.unil.ch/space/publications/2199-2/). Strasbourg: Council of Europe. 
+
+For measures taken in prisons to curb the spread of COVID-19, up to August 2020:
+
+- Güerri C, Martí M, Pedrosa A. (2020). [Las prisiones ante el COVID-19. Medidas adoptadas por país.](https://covid19prisons.wordpress.com/measures/)
+
+Data on cases, deaths, and vaccinations were augmented using the following sources:
+
+- [EuroPris: COVID-19 Feedback Collection](https://www.europris.org/file/13548/)
+- [World Prison Brief](https://www.prisonstudies.org/map/europe)
+- Various national and regional sources, e.g. the local Ministries of Justice or prison administration
+
+Data on pandemic measures and were augmented using the following sources:
+
+- [EuroPris (2021): COVID-19 Feedback Collection](https://www.europris.org/file/13548/)
+- [EuroPris (2021): Prevention measures in European Prisons against COVID-19](https://www.europris.org/covid-19-prevention-measures-in-european-prisons/)
+- [Prison Insider (2020): Europe: coronavirus, prison fever](https://www.prison-insider.com/en/articles/europe-coronavirus-la-fievre-des-prisons)
+Europris
+
+You can find detailed information on the source of each data point in the project database, which you can find in the Excel file in this repository, as well as in this [Google Sheet](https://docs.google.com/spreadsheets/d/11tNCMg1vkXedOKbMcU30dtHNOsqQmtBx-ejMHd2sZ9M/edit#gid=1438591309).
+
+The base countries included in this analysis are the EU-27 we could find information on. Non-EU countries in Europe were added when of interest to the analysis.
+
+# Analysis
+
+1. Read data
+2. Data overview
+3. Consolidate regional data
+4. Check non-cumulative data points
+5. Relative and absolute cases / deaths
+6. Vaccination progress
+7. Prison population and overcrowding
+
+
+```{r}
+## install and load needs, if not yet present
+# install.packages("needs")
+library(needs)
+
+# packages used in this markdown document
+needs(tidyverse, readxl, svglite)
+```
+
+# 1 Read data
+
+- Read cases/deaths data `d`
+
+```{r message=FALSE}
+d = read_xlsx("Database Prisons and Covid.xlsx", sheet = "1.4 Cases & deaths", range = "A4:L1000",
+               na = c("","NA"), trim_ws = TRUE) %>% select(1:9) %>% filter(!is.na(country)) %>% 
+    rename(cases_inmates = `covid-19 cases...6`, deaths_inmates = `deaths related to covid-19...7`,
+           cases_staff = `covid-19 cases...8`, deaths_staff = `deaths related to covid-19...9`) %>% 
+    mutate(date = as.Date(date))
+```
+
+- Join with vaccination progress data `d_vax`
+
+```{r}
+d_vax = read_xlsx("Database Prisons and Covid.xlsx", sheet = "2.2 Vaccine progress", range = "A3:J1000",
+               na = c("","NA"), trim_ws = TRUE) %>% select(1:7) %>% filter(!is.na(country)) %>% 
+  pivot_wider(names_from = `vaccine measure`, values_from = `number among inmates`, values_fill = NA) %>% 
+  mutate(date = as.Date(date))
+
+d = full_join(d, d_vax, by = c("country", "level", "region", "date", "period"))
+```
+
+- Read prison population data `d_pop`
+
+```{r}
+#read data
+d_pop = read_xlsx("Database Prisons and Covid.xlsx", sheet = "1.1 Pop change", range = "A3:L1000",
+               na = c("","NA"), trim_ws = TRUE) %>% 
+  select(1:4,7) %>% filter(!is.na(Country)) %>% 
+  setNames(c("country", "date", "inmates", "staff", "capacity")) %>% 
+  filter(!is.na(inmates)) %>% mutate(date = as.Date(date))
+
+```
+
+- Data on cases, deaths and vaccinations in the general population `covid_pop`.
+  (**Source:** [Our World in Data](https://ourworldindata.org/explorers/coronavirus-data-explorer), extracted on 2021-11-21)
+
+```{r}
+covid_pop = read.csv("data/owid-covid-data-2021-11-21.csv") %>% select(1:4,11,14,42,43) %>%
+  filter(iso_code %in% c("ALB","AUT","BEL","BGR","CHE","CYP","CZE","DEU","DNK","ESP","EST","FIN","FRA","GRC","HRV","HUN","IRL","ITA","LTU","LUX","LVA","MDA","MLT","MNE","NLD","NOR","POL","PRT","ROU","SVK","SVN","SWE")) %>% 
+  transmute(location, date = as.Date(date),
+         cases = total_cases_per_million/10^6,
+         deaths = total_deaths_per_million/10^6,
+         `people with at least 1 dose` = people_vaccinated_per_hundred/100,
+         `fully vaccinated people` = people_fully_vaccinated_per_hundred/100) %>% 
+  pivot_longer(3:6, names_to = "type", values_to = "value_population_rel")
+```
+
+- Filter all datasets for countries included in analysis
+
+```{r}
+c_filter = c("Andorra","Armenia","Azerbaijan","BH: Rep. Srpska",
+             "Georgia","Iceland","Liechtenstein","Monaco","North Macedonia",
+             "Russian Fed.","San Marino","Serbia (Republic of)","Turkey",
+             "UK: Engl. & Wales","UK: North. Ireland","UK: Scotland")
+d = d %>% filter(!(country %in% c_filter))
+d_vax = d_vax %>% filter(!(country %in% c_filter))
+d_pop = d_pop %>% filter(!(country %in% c_filter))
+rm(c_filter)
+```
+
+
+
+# 2 Data overview
+
+Main dataset columns:
+```{r}
+names(d)
+```
+
+Chart of available data points:
+```{r}
+d_plot = d %>% group_by(country) %>% filter(max(date) > as.Date("2021-01-01"))
+
+ggplot(d_plot, aes(date, country)) +
+    geom_point() +
+    ggtitle("Available data points per country")
+```
+Number of countries by geographic levels of data:
+```{r echo=TRUE}
+d %>% group_by(level) %>% summarize(n = length(unique(country))) %>% knitr::kable()
+```
+
+4 countries have regional data that might need to be aggregated to the national level:
+```{r echo=TRUE}
+d %>% filter(level == "regional") %>% `$`(country) %>% unique
+```
+
+
+# 3 Consolidate regional data
+
+Data needs to be aggregated if regional data is not available on the national level for the same dates. That is the case for the following countries:
+
+```{r echo=TRUE}
+d %>% 
+  group_by(country, date) %>%
+  filter("regional" %in% level) %>% 
+  mutate(agg = !("national" %in% level)) %>% 
+  group_by(country) %>% 
+  summarise(agg = any(agg)) %>% knitr::kable()
+```
+
+Of the 4 countries with regional data, Germany and Spain (State Adm.) have to be summed up to provide national figures.
+
+About the regional data:
+
+- regional data for `Germany` includes regional data for all 16 states, although in varying levels of detail
+- regional data for `Spain (State Adm.)` includes regional data for 18 autonomous cities and communities of Spain, excluding Catalonia, for these 4 points in time: `2020-06-21, 2020-12-31, 2021-03-31, 2021-08-03`.
+
+```{r}
+d_regional = d %>% filter(country %in% c("Germany","Spain (State Adm.)"), level == "regional")
+```
+
+
+## Plot case numbers by time and region for Germany
+
+To see how complete a picture the regional data for Germany provide, we check to see whether the regions with the highest case numbers also provided relatively frequent data updates.
+
+```{r}
+ggplot(d_regional %>% filter(country == "Germany"), aes(date, region)) +
+    geom_point(aes(size = cases_inmates)) +
+    geom_text(aes(label = cases_inmates), vjust = -.5, size = 3)
+```
+
+- **Spain:** data present for all regions for the same points in time
+- **Germany:** regions with higher case numbers have provide more data points, regions with only few available data points have relatively low numbers
+
+Aggregating across regions should provide a reasonably complete picture for Germany. Case numbers should be viewed as minimum case numbers for any given point in time.
+
+Vaccination data for Germany is only sporadically available and should not be aggregated to the national level.
+
+## Aggregate regional data to national level
+
+- Summarize data across regions
+
+```{r}
+cols_to_mutate = 6:12
+
+#summarize across regions:
+tmp = d_regional %>%
+    group_by(country, region) %>% arrange(country, region,date) %>%
+    #fill down 0 values, treat NA as 0 for aggregation
+    fill(cols_to_mutate) %>% mutate(across(cols_to_mutate-2, ~ ifelse(is.na(.), 0, .))) %>% 
+    #calculate differences between points in time within groups
+    mutate(across(cols_to_mutate-2, ~ . - lag(.,1,default = 0))) %>% 
+    group_by(country, date) %>% 
+    #sum over regions
+    summarise(across(cols_to_mutate-2, sum, na.rm = T)) %>% 
+    #calculate cumulative cases over time
+    mutate(across(2:8, cumsum)) %>% 
+    #reintroduce NAs for: Spain (State Adm.) cases/deaths staff, vaccinations in Germany
+    mutate(cases_staff = ifelse(country == "Spain (State Adm.)", NA, cases_staff),
+           deaths_staff = ifelse(country == "Spain (State Adm.)", NA, deaths_staff),
+           `people with at least 1 dose` = NA,
+           `fully vaccinated people` = ifelse(country == "Germany" | `fully vaccinated people` == 0,NA, `fully vaccinated people`),
+           `administered doses` = NA)
+```
+
+- Append to complete datasets
+
+```{r}
+d = d %>%
+  bind_rows(tmp %>% mutate(level = "national", period = "cumulative"))
+d_vax = d_vax %>% 
+  bind_rows(tmp %>% filter(!is.na(`fully vaccinated people`)) %>% select(-(3:6)) %>% mutate(level = "national", period = "cumulative"))
+rm(tmp, d_regional, cols_to_mutate)
+```
+
+
+# 4 Check non-cumulative data
+
+Some countries did not report cumulative data, but instead only reported data referring to specific time periods. These countries are:
+
+```{r echo=TRUE}
+d %>% filter(period != "cumulative") %>% group_by(country, period) %>%
+  summarise(n = n(), min = min(date), max = max(date)) %>% knitr::kable()
+```
+
+Italy, Poland and Albania provide non-cumulative data.
+For Italy and Poland, this refers to active cases, which can't be compared to new positive tests at all. Albania only provides data for the year 2021.
+
+This data can't be compared to cumulative data points from other countries and will not be aggregated.
+
+# 5 Relative and absolute cases / deaths
+
+## 5.1 Absolute cases/deaths
+
+Plot national cumulative data over time, for countries with data points in 2021.
+
+```{r}
+d_plot = d %>%
+  group_by(country) %>% 
+  filter(level == "national", period == "cumulative", country != "Italy",
+         max(date) > as.Date("2021-01-01")) %>%
+  select(1:9) %>% pivot_longer(6:9)
+
+
+ggplot(d_plot) +
+  geom_line(aes(date, value, colour = country)) +
+  geom_point(aes(date, value, colour = country)) +
+  geom_text(data = d_plot %>% group_by(country, name) %>%
+              filter(!is.na(value)) %>% slice(which.max(date)),
+            aes(label = country, colour = country, x = date, y = value), hjust = -.1) +
+  scale_colour_discrete(guide = 'none') +
+  scale_x_date(expand=expand_scale(mult=c(.05,.5))) +
+  facet_wrap(~name, scales = "free_y") +
+  ggtitle("COVID-19 Cases & deaths in prisons")
+```
+
+- France has the most cases among inmates and staff, followed by Spain, Germany, Hungary and Belgium.
+- Hungary has the highest death counts among inmates, although they're still very low, followed, Spain.
+
+## 5.2 Relative cases/deaths
+
+For better comparison, we calculate the cases and deaths relative to the prison population at the time. This can only effectively be done for inmates, since data on the number of staff isn't reliably available.
+
+We pick the prison population size according to the closest reference date from `d_pop`. The reference date is noted in the finished data set.
+
+```{r}
+d_cases_rel = d %>% filter(level == "national", period == "cumulative") %>%
+  select(1,4,6:7) %>% 
+  left_join(d_pop[-4] %>% rename(date_ref = date), by = "country") %>% 
+  mutate(dateDiff = abs(date - date_ref)) %>%
+  group_by(country, date) %>%
+  filter(dateDiff == min(dateDiff), !(is.na(cases_inmates) & is.na(deaths_inmates))) %>% 
+  pivot_longer(3:4, names_to = "type") %>%
+  mutate(type = gsub("_inmates","",type),
+         value_rel = value/inmates)
+```
+
+Plot relative cases / deaths over time:
+
+```{r}
+d_plot = d_cases_rel %>% group_by(country) %>% 
+  filter(!grepl("Italy", country),
+         max(date) > as.Date("2021-01-01"))
+
+ggplot(d_plot) +
+  geom_line(aes(date, value_rel, colour = country)) +
+  geom_point(aes(date, value_rel, colour = country)) +
+  geom_text(data = d_plot %>% group_by(country, type) %>%
+              filter(!is.na(value_rel)) %>% slice(which.max(date)),
+            aes(label = country, colour = country, x = date, y = value_rel), hjust = -.1) +
+  scale_colour_discrete(guide = 'none') +
+  scale_x_date(expand=expand_scale(mult=c(.05,.4))) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 0.01)) +
+  facet_wrap(~type, scales = "free_y") +
+  ggtitle("COVID-19 Cases & deaths in prisons",
+          subtitle = "% of inmates that tested positive / died related to COVID-19")
+```
+```{r}
+#Ranking of latest data:
+tmp = d_cases_rel %>% group_by(country, type) %>%
+  select(1:2,7:9) %>% 
+  filter(!is.na(value_rel), max(date) > as.Date("2021-01-01")) %>%
+  slice(which.max(date)) %>% 
+  arrange(type, -value_rel)
+```
+
+**Latest infection rate among inmates by country:**
+
+`value`: Cumulative number of cases on that date
+
+`value_rel`: Cumulative share of inmates infected until that date
+
+```{r}
+tmp %>% filter(type == "cases") %>% ungroup %>% mutate(value_rel = round(value_rel*100, 2)) %>% select(-3) %>%
+  knitr::kable(digits = 2)
+```
+
+Croatia, Slovenia, Estonia, Belgium and Spain have the highest relative number of cases, with 10-15% of inmates infected.
+
+The latest numbers for Croatia are from the fourth wave in November 2021, while the other figures are from before the fourth wave, so the latest numbers from Croatia are not comparable with the latest numbers of other countries. They are, however, an interesting indication that cases might be rising during the fourth wave in other countries as well.
+
+**Most recent number of deaths per 100,000 inmates by country:**
+
+`value`: Cumulative number of cases on that date
+
+`value_rel`: Cumulative share of inmates infected until that date
+
+```{r}
+tmp %>% filter(type == "deaths") %>% ungroup %>% mutate(value_rel = round(value_rel*100, 2)) %>% select(-3) %>%
+  knitr::kable(digits = 2)
+```
+
+- Croatia, Hungary, Greece and Bulgaria have the most deaths related to COVID-19, followed by Belgium and Spain.
+- Deaths numbers seem surprisingly low compared to the number of cases. Calculate the case fatality rate to learn more.
+
+## 5.3 Case fatality rate
+
+Pick latest date per country with case and death data available. Calculate CFR (share of deaths in all cases).
+
+```{r}
+d_cfr = d %>% filter(level == "national", period == "cumulative") %>%
+  group_by(country) %>% select(1,4,6:7) %>% 
+  filter(!is.na(cases_inmates), !is.na(deaths_inmates)) %>%
+  slice(which.max(date)) %>% 
+  mutate(cfr = deaths_inmates / cases_inmates) %>% 
+  arrange(-cfr)
+
+d_cfr %>% arrange(-cfr) %>% knitr::kable(digits = 3)
+```
+The case fatality rate is around 0.5% in the highest cases, and more often below 0.05%. That seems suspiciously low considering the usual COVID-19 death rates and the risk factors among prison population. It might be an indicator of underreporting.
+
+
+## 5.4 Compare cases and deaths with general population
+
+To compare the situation in prisons with the situation in the countries around them, we use general COVID-19-figures collated by [Our World In Data](https://ourworldindata.org/coronavirus-data-explorer) and compare:
+
+- relative cases
+- relative deaths
+- case fatality rates
+
+```{r}
+d_cases_rel_pop = d_cases_rel %>%
+  mutate(country_match = country %>% gsub(" \\(.+", "", .) %>% gsub(" Rep\\.$", "ia",.)) %>%
+  left_join(covid_pop, by = c("country_match" = "location", "date","type")) %>% 
+  select(1:2,7:9,11) %>% 
+  mutate(diff_percentpoints = (value_rel - value_population_rel)*100,
+         diff_percent = value_rel / value_population_rel)
+
+```
+
+Leave out data for Croatia from November, since it's not comparable to earlier data from the other countries, which are from before the winter 2021 wave.
+
+
+**Plot relative cases in prisons compared to the general population:**
+
+```{r include=FALSE}
+d_plot = d_cases_rel_pop %>%
+  group_by(country, type) %>% 
+  filter(!is.na(value_rel), max(date) > as.Date("2021-01-01"),
+        date < as.Date("2021-11-01")) %>%
+  arrange(type, -diff_percent) %>% 
+  slice_max(date) %>% 
+  mutate(label = paste0(country,"\n",date))
+
+ggplot(d_plot %>% filter(type == "cases", max(date) > as.Date("2021-01-01")),
+       aes(value_population_rel, value_rel, label = label,
+           color = (value_population_rel > value_rel))) +
+  geom_abline(yintercept = 0, slope = 1) +
+  geom_point() +
+  geom_text(hjust = -.1, size = 3) +
+  scale_colour_discrete(guide = 'none') +
+  scale_x_continuous(limits = c(0,.15), labels = scales::percent_format(accuracy = 1)) +
+  scale_y_continuous(limits = c(0,.15), labels = scales::percent_format(accuracy = 1)) +
+  labs(title = "COVID-19 Cases in prisons vs general population",
+       subtitle = "Countries above the line have more cases in prison than in the general population.",
+       x = "cumulative cases in total population", y = "cumulative cases in prisons")
+```
+
+![](graphics/342_en_prisons_cases.png)
+
+**Plot relative deaths in prisons compared to the general population:**
+
+```{r}
+ggplot(d_plot %>% filter(type == "deaths", max(date) > as.Date("2021-01-01")),
+       aes(value_population_rel, value_rel, label = country,
+           color = (value_population_rel > value_rel))) +
+  geom_abline(yintercept = 0, slope = 1) +
+  geom_point() +
+  geom_text(hjust = -.1, size = 3) +
+  scale_colour_discrete(guide = 'none') +
+  scale_x_continuous(limits = c(0,.0035), labels = scales::percent_format(accuracy = .01)) +
+  scale_y_continuous(limits = c(0,.0035), labels = scales::percent_format(accuracy = .01)) +
+  labs(title = "COVID-19 Deaths in prisons vs general population",
+       subtitle = "Countries above the line have more COVID-19 deaths in prison than in the general population",
+       x = "cumulative deaths in total population", y = "cumulative deaths in prisons")
+```
+
+Deaths are a lot lower than they are in the general population for all countries.
+
+
+**Plot case fatality rates in prisons compared to the general population:**
+
+```{r}
+d_cfr_rel = d_cfr %>%
+  mutate(country_match = country %>% gsub(" \\(.+", "", .) %>% gsub(" Rep\\.$", "ia",.)) %>% 
+  left_join(covid_pop %>%
+              pivot_wider(names_from = type, values_from = value_population_rel) %>% 
+              transmute(location, date, cfr_population = deaths/cases),
+            by = c("country_match" = "location", "date")) %>% 
+  select(1:2,4:5,7) %>% 
+  mutate(diff_percentpoints = (cfr - cfr_population)*100,
+         diff_percent = cfr / cfr_population) %>% 
+  arrange(diff_percent) 
+  
+```
+
+```{r}
+ggplot(d_cfr_rel, aes(cfr_population, cfr, label = country,
+           color = (cfr_population > cfr))) +
+  geom_abline(yintercept = 0, slope = 1) +
+  geom_point() +
+  geom_text(hjust = -.1, size = 3) +
+  scale_colour_discrete(guide = 'none') +
+  scale_x_continuous(limits = c(0,.06), labels = scales::percent_format(accuracy = 1)) +
+  scale_y_continuous(limits = c(0,.06), labels = scales::percent_format(accuracy = 1)) +
+  labs(title = "COVID-19 Case fatality rate in prisons vs general population",
+       subtitle = "Reported deaths in % of Covid-19 cases. Countries above the line have a higher CFR in prison than in the general population.",
+       x = "CFR in total population", y = "CFR in prisons")
+```
+
+The case fatality rate in prisons is only a fraction of that in the general population, except for Bulgaria. It seems unlikely that case fatality rates in prisons are actually this low. The more likely hypothesis would be that deaths related to COVID-19 do not get reported as reliably in prisons as they do in the general population.
+
+# 6 Vaccination progress
+
+# 6.1 Vaccination progress over time
+
+Calculate share of inmates vaccinated like in 5.2.
+
+```{r}
+d_vax_rel = d %>%  
+  filter(level == "national", date > as.Date("2021-01-01"),
+         !(is.na(`people with at least 1 dose`) & is.na(`fully vaccinated people`))) %>% 
+  select(1,4,10,12) %>% 
+  left_join(d_pop[-(4:5)] %>% rename(date_ref = date), by = "country") %>% 
+  mutate(date = as.Date(date), dateDiff = abs(date - date_ref)) %>%
+  group_by(country, date) %>%
+  filter(dateDiff == min(dateDiff)) %>% 
+  select(-dateDiff) %>% 
+  pivot_longer(3:4) %>% 
+  mutate(value_rel = value/inmates)
+```
+
+Plot progress over time:
+
+```{r}
+d_plot = d_vax_rel %>% filter(!is.na(value_rel))
+
+ggplot(d_plot) +
+  geom_line(aes(date, value_rel, colour = country)) +
+  geom_point(aes(date, value_rel, colour = country)) +
+  geom_text(data = d_plot %>% group_by(country, name) %>% slice(which.max(date)),
+            aes(label = country, colour = country, x = date, y = value_rel), hjust = -.1) +
+  scale_colour_discrete(guide = 'none') +
+  scale_x_date(expand=expand_scale(mult=c(.05,.25)), date_breaks = "3 months",
+               date_minor_breaks = "1 month", labels=scales::date_format("%b")) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1), limits = c(0,1)) +
+  facet_wrap(~name) +
+  ggtitle(paste("COVID-19 vaccinations in prisons", Sys.Date()),
+          subtitle = "% of inmates vaccinated against COVID-19")
+
+```
+
+
+# 6.2 Compare vaccination progress to population
+
+Compare vaccination rates among prisoners at the latest available point in time with the rate in the general population like in 5.4
+
+```{r}
+d_vax_rel_pop = d_vax_rel %>% select(-3) %>% 
+  mutate(country_match = country %>% gsub(" \\(.+", "", .) %>% gsub(" Rep\\.$", "ia",.)) %>% 
+  left_join(covid_pop %>% rename(date_ref = date) %>% filter(!is.na(value_population_rel)),
+            by = c("country_match" = "location", "name" = "type")) %>% 
+  mutate(date = as.Date(date), dateDiff = abs(date - date_ref)) %>%
+  group_by(country, date) %>%
+  filter(dateDiff == min(dateDiff)) %>% 
+  select(-date_ref, -dateDiff,-country_match)
+```
+
+
+```{r include=FALSE}
+d_plot = d_vax_rel_pop %>%
+  group_by(country, name) %>% 
+  filter(max(date) > as.Date("2021-06-01")) %>%
+  arrange(date) %>% 
+  slice_max(date) %>% 
+  mutate(label = paste(country,gsub("2021-","",date))) %>% ungroup
+d_plot$label = factor(d_plot$label, levels = d_plot %>%
+                        filter(!is.na(value_rel)) %>% arrange(value_rel) %>% `$`(label) %>% unique)
+
+ggplot(d_plot, aes(value_rel, label, fill = name)) +
+  geom_col(position = position_dodge2(preserve = "single")) +
+  geom_point(aes(x = value_population_rel), pch = 21, position = "dodge") +
+  scale_x_continuous(limits = c(0,1),labels = scales::percent_format(accuracy = 1)) +
+  theme_light() +
+  labs(title = "COVID-19 Vaccinations in prisons vs general population",
+       subtitle = "Bars are values in prison, dots are values in population",
+       x = "", y = "")
+```
+
+![](graphics/346_en_prisons_vaccine_progress.png)
+
+# 7 Prison population and overcrowding
+
+To get a sense of how overcrowded prison systems were at the start of the pandemic, and how things changed since then, we'll take a closer look at the prison population statistics over time.
+
+```{r}
+d_crowding = d_pop %>% arrange(country, date) %>% 
+  mutate(cap_extrapolated = is.na(capacity)) %>% 
+  fill(capacity, .direction = "down") %>% 
+  mutate(density = inmates/capacity,
+         overcrowded = density > 1)
+```
+
+## 7.1 Overcrowding at the start of the pandemic
+
+Plot prison populations on January 1, 2020, versus official capacity.
+
+```{r include=FALSE}
+d_plot = d_crowding %>%
+  group_by(country) %>% 
+  filter(date == as.Date("2020-01-01"))
+
+
+ggplot(d_plot, aes(density, reorder(country, density), fill = overcrowded)) +
+  geom_vline(xintercept = 1) +
+  geom_col() +
+  scale_x_continuous(labels = scales::percent_format(accuracy = 1)) +
+  theme_light() +
+  labs(title = "Overcrowding in European prisons, start of the pandemic",
+       subtitle = "Number of inmates vs. official capacity",
+       x = "", y = "share of capacity filled")
+```
+One in three countries' prison systems (10 of 34) was operating above official capacity at the start of the pandemic.
+
+![](graphics/344_en_prisons_overcrowding.png)
+
+## 7.2 Prison populations over time
+
+Plot prison populations over time for each country:
+
+```{r include=FALSE}
+d_plot = d_crowding
+d_plot$country = factor(d_plot$country, levels = d_plot %>% group_by(country) %>% 
+                          slice_max(date) %>% arrange(-density) %>% `$`(country))
+
+ggplot(d_plot, aes(date, density)) +
+  geom_hline(yintercept = 1) +
+  geom_line() +
+  geom_point(data = d_plot %>% group_by(country) %>% filter(date == min(date) | date == max(date))) +
+  facet_wrap(~country, ncol = 4) +
+  theme_minimal()
+```
+![](graphics/345_en_prisons_popchange.png)
+
+Many countries released a lot of prisoners at the start of the pandemic. But in many, populations are now rising again.
+
+
+**Prison density at the latest available date:**
+
+```{r}
+d_crowding %>% group_by(country) %>% slice_max(date) %>% select(-c(4,6)) %>% arrange(-density) %>% knitr::kable(digits = 2)
+```
+10 of 34 countries still operate their prisons above their official capacity according to the latest available data, the same number of countries as at the beginning of 2020.
+
+Of those with overcrowded prison systems at the start of the pandemic, Hungary, the Czech Republic and Austria are now below 100% (but still above 95%) of their official capacity.
+Sweden, Denmark and Croatia are now overcrowded, even though they were not at the start of 2020.
+
+```{r}
+save.image("scripts/data.RData")
+```
+
