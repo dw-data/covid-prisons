@@ -32,10 +32,8 @@ Links will be added as articles are published
 -   DW.com: “COVID: How Europe’s prisons have fared in the pandemic”
     [English](https://www.dw.com/a-60006262) \|
     [Albanian](https://p.dw.com/p/43se9) \|
-    [German](https://www.dw.com/a-60006746) | [Greek](https://www.dw.com/a-60028764)
--   European Data Journalism Network: “Locked up: Covid-19 and prisons
-    in Europe”
-    (<https://www.europeandatajournalism.eu/eng/Investigations/Locked-up-Covid-19-and-prisons-in-Europe>)
+    [German](https://www.dw.com/a-60006746) | [Greek](https://www.dw.com/a-60028764) | [Serbian](https://www.dw.com/a-60030103)
+- European Data Journalism Network: "Locked up: Covid-19 and prisons in Europe" [English](https://www.europeandatajournalism.eu/eng/Investigations/Locked-up-Covid-19-and-prisons-in-Europe)
 
 **This repository is maintained by:** [Kira
 Schacht](https://twitter.com/daten_drang)
