@@ -33,6 +33,7 @@ Links will be added as articles are published
     [English](https://www.dw.com/a-60006262) \|
     [Albanian](https://p.dw.com/p/43se9) | [Bosnian](https://www.dw.com/a-60007743) | [Croatian](https://www.dw.com/a-60029627) | [German](https://www.dw.com/a-60006746) | [Greek](https://www.dw.com/a-60028764) | [Romanian](https://www.dw.com/a-60032033) | [Serbian](https://www.dw.com/a-60030103)
 - European Data Journalism Network: "Locked up: Covid-19 and prisons in Europe" [English](https://www.europeandatajournalism.eu/eng/Investigations/Locked-up-Covid-19-and-prisons-in-Europe)
+- VoxEurop: "Convicted twice over: Europe’s prisons and the pandemic" [English](https://voxeurop.eu/en/convicted-twice-over-europes-prisons-and-the-pandemic/)
 
 **This repository is maintained by:** [Kira
 Schacht](https://twitter.com/daten_drang)
