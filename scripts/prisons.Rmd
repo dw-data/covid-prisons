@@ -7,7 +7,7 @@ output:
 ---
 
 ```{r setup, include = FALSE}
-knitr::opts_knit$set(root.dir = "") #INSERT YOUR PROJECT DIRECTORY HERE
+knitr::opts_knit$set(root.dir = "/Users/schachtk/Documents/DW/341_347_prisons/extern") #INSERT YOUR PROJECT DIRECTORY HERE
 knitr::opts_chunk$set(
 	echo = FALSE,
 	message = FALSE,
@@ -372,7 +372,7 @@ tmp = d_cases_rel %>% group_by(country, type) %>%
 
 `value`: Cumulative number of cases on that date
 
-`value_rel`: Cumulative share of inmates infected until that date
+`value_rel`: Cumulative share of inmates infected until that date, in percent
 
 ```{r}
 tmp %>% filter(type == "cases") %>% ungroup %>% mutate(value_rel = round(value_rel*100, 2)) %>% select(-3) %>%
@@ -383,11 +383,11 @@ Croatia, Slovenia, Estonia, Belgium and Spain have the highest relative number o
 
 The latest numbers for Croatia are from the fourth wave in November 2021, while the other figures are from before the fourth wave, so the latest numbers from Croatia are not comparable with the latest numbers of other countries. They are, however, an interesting indication that cases might be rising during the fourth wave in other countries as well.
 
-**Most recent number of deaths per 100,000 inmates by country:**
+**Most recent share of deaths among inmates by country:**
 
 `value`: Cumulative number of cases on that date
 
-`value_rel`: Cumulative share of inmates infected until that date
+`value_rel`: Cumulative share of deaths related to COVID-19 among inmates until that date, in percent
 
 ```{r}
 tmp %>% filter(type == "deaths") %>% ungroup %>% mutate(value_rel = round(value_rel*100, 2)) %>% select(-3) %>%

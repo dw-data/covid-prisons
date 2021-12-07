@@ -298,7 +298,8 @@ Plot relative cases / deaths over time:
 
 `value`: Cumulative number of cases on that date
 
-`value_rel`: Cumulative share of inmates infected until that date
+`value_rel`: Cumulative share of inmates infected until that date, in
+percent
 
 | country            | date       | value | value_rel |
 |:-------------------|:-----------|------:|----------:|
@@ -337,11 +338,12 @@ latest numbers from Croatia are not comparable with the latest numbers
 of other countries. They are, however, an interesting indication that
 cases might be rising during the fourth wave in other countries as well.
 
-**Most recent number of deaths per 100,000 inmates by country:**
+**Most recent share of deaths among inmates by country:**
 
 `value`: Cumulative number of cases on that date
 
-`value_rel`: Cumulative share of inmates infected until that date
+`value_rel`: Cumulative share of deaths related to COVID-19 among
+inmates until that date, in percent
 
 | country            | date       | value | value_rel |
 |:-------------------|:-----------|------:|----------:|
