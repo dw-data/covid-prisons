@@ -51,6 +51,7 @@ Links will be added as articles are published
     \|
     [Italian](https://voxeurop.eu/it/covid-19-nelle-prigioni-europee-vaccinni/)
     \|
+    [Romanian](https://voxeurop.eu/ro/covid-cum-au-procedat-inchisorile-din-europa-in-timpul-pandemiei/) \| 
     [Spanish](https://voxeurop.eu/es/como-se-las-han-arreglado-las-carceles-europeas-durante-la-pandemia-de-covid/)
 
 **This repository is maintained by:** [Kira
