@@ -31,7 +31,7 @@ Links will be added as articles are published.
 
 **Main overview article:**
 
-- DW: "COVID: How Europe’s prisons have fared in the pandemic" [[English](https://www.dw.com/a-60006262) | [Albanian](https://p.dw.com/p/43se9) | [Bosnian](https://www.dw.com/a-60007743) | [Croatian](https://www.dw.com/a-60029627) | [German](https://www.dw.com/a-60006746) | [Greek](https://www.dw.com/a-60028764) | [Macedonian](https://www.dw.com/a-60030600) | [Romanian](https://www.dw.com/a-60032033) | [Serbian](https://www.dw.com/a-60030103)]
+- DW: "COVID: How Europe’s prisons have fared in the pandemic" [[English](https://www.dw.com/a-60006262) | [Albanian](https://p.dw.com/p/43se9) | [Bosnian](https://www.dw.com/a-60007743) | [Bulgarian](https://www.dw.com/a-60043807) | [Croatian](https://www.dw.com/a-60029627) | [German](https://www.dw.com/a-60006746) | [Greek](https://www.dw.com/a-60028764) | [Macedonian](https://www.dw.com/a-60030600) | [Polish](https://www.dw.com/a-60106510) | [Romanian](https://www.dw.com/a-60032033) | [Serbian](https://www.dw.com/a-60030103)]
 - European Data Journalism Network: "Locked up: Covid-19 and prisons in Europe" [[English | French | German | Italian](https://www.europeandatajournalism.eu/eng/Investigations/Locked-up-Covid-19-and-prisons-in-Europe)]
 - VoxEurop: "Convicted twice over: Europe’s prisons and the pandemic" [[English](https://voxeurop.eu/en/convicted-twice-over-europes-prisons-and-the-pandemic/) | [French](https://voxeurop.eu/fr/convicted-twice-over-europes-prisons-and-the-pandemic/) | [German](https://voxeurop.eu/de/covid-wie-die-pandemie-europas-gefaengnisse-trifft/) |  [Italian](https://voxeurop.eu/it/covid-19-nelle-prigioni-europee-vaccinni/) | [Romanian](https://voxeurop.eu/ro/covid-cum-au-procedat-inchisorile-din-europa-in-timpul-pandemiei/) |  [Spanish](https://voxeurop.eu/es/como-se-las-han-arreglado-las-carceles-europeas-durante-la-pandemia-de-covid/)]
 - MIIR: [[English](https://miir.gr/covid-how-europe-s-prisons-have-fared-in-the-pandemic/) | [Greek](https://miir.gr/el/ereyna-eyropaikes-fylakes-kai-pandimia/)]
@@ -39,8 +39,10 @@ Links will be added as articles are published.
 **Spin-off stories:**
 
 - Alternatives Economiques: Les prisons à l’épreuve de la pandémie (Prisons in the pandemic) [[French](https://www.alternatives-economiques.fr/prisons-a-lepreuve-de-pandemie/00101434)]
+- Alternatives Economiques: Avec la pandémie, c’est la prison dans la prison (In the pandemic, it's a prison inside prison) [[French](https://www.alternatives-economiques.fr/pandemie-cest-prison-prison/00101441)]
 - OpenPolis: La gestione della pandemia nelle carceri italiane e europee (Pandemic management in Italian and European prisons)
  [[Italian](https://www.openpolis.it/la-gestione-della-pandemia-nelle-carceri-italiane-e-europee/)]
+- VoxEurop: Prisons have managed to contain the pandemic, but at what price? [[English | French](https://voxeurop.eu/en/prisons-have-managed-to-contain-the-pandemic-but-at-what-price/)]
 
 
 **This repository is maintained by:** [Kira
