@@ -46,9 +46,12 @@ Links will be added as articles are published.
 - Alternatives Economiques: *"Les prisons à l’épreuve de la pandémie" ("Prisons in the pandemic")* [[French](https://www.alternatives-economiques.fr/prisons-a-lepreuve-de-pandemie/00101434)]
 - Alternatives Economiques: *"Enquête sur l’enfer carcéral au temps du Covid" ("France: The pandemic has exposed a dysfunctional prison system")* [[English](https://www.europeandatajournalism.eu/index.php/eng/News/Data-news/France-The-pandemic-has-exposed-a-dysfunctional-prison-system) | [French](https://www.alternatives-economiques.fr/enquete-lenfer-carceral-temps-covid/00101433)]
 - Alternatives Economiques: *"Avec la pandémie, c’est la prison dans la prison" ("With the pandemic, it was a prison inside prison")* [[English](https://www.europeandatajournalism.eu/index.php/eng/News/Data-news/With-the-pandemic-it-was-a-prison-within-a-prison) | [French](https://www.alternatives-economiques.fr/pandemie-cest-prison-prison/00101441)]
-- EUrologus: *"The impact of Covid-19 on prisons in Hungary" ("Koronavírus-járvány a rácsok mögött")* [ [English](https://www.europeandatajournalism.eu/eng/News/Data-news/The-impact-of-Covid-19-on-prisons-in-Hungary) | [Hungarian](https://hvg.hu/eurologus/20211226_koronavirus_bortonok_fogvatartottak)]
+- EUrologus: *"The impact of Covid-19 on prisons in Hungary" ("Koronavírus-járvány a rácsok mögött")* [[English](https://www.europeandatajournalism.eu/eng/News/Data-news/The-impact-of-Covid-19-on-prisons-in-Hungary) | [Hungarian](https://hvg.hu/eurologus/20211226_koronavirus_bortonok_fogvatartottak)]
+- iMEdD: *"Overcrowding, isolation, and shrinking of human rights in Greek prisons"* [[English](https://lab.imedd.org/en/overcrowding-isolation-and-shrinking-of-human-rights-in-greek-prisons/)]
+- OBC Transeuropa: *"Covid-19 e carceri: chiusure dolorose e innovazioni incoraggianti" ("Covid-19 and prisons: painful closures and encouraging innovations")*[[English](https://www.balcanicaucaso.org/eng/Areas/Italy/Covid-19-and-prisons-painful-closures-and-encouraging-innovations-214675) | [Italian](https://www.balcanicaucaso.org/aree/Italia/Covid-19-e-carceri-chiusure-dolorose-e-innovazioni-incoraggianti-214675)]
 - OpenPolis: *"La gestione della pandemia nelle carceri italiane e europee" ("Pandemic management in Italian and European prisons)"*
  [[Italian](https://www.openpolis.it/la-gestione-della-pandemia-nelle-carceri-italiane-e-europee/)]
+- Sphera: *"the impact of Covid-19 on prisons across Europe"* [[Italian | English]](https://www.instagram.com/p/CZ1hOPKNAZm/)]
 - VoxEurop: *"Prisons have managed to contain the pandemic, but at what price?"* [[English | French](https://voxeurop.eu/en/prisons-have-managed-to-contain-the-pandemic-but-at-what-price/)]
 
 
